@@ -1,0 +1,18 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Log In"; Layout = "_Layout"; }
+<h1>Log In</h1>
+<form asp-action="Login" method="post" class="col-md-4">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="ReturnUrl" />
+    <div class="mb-3">
+        <label class="form-label" asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+    <a asp-action="ForgotPassword" class="btn btn-link">Forgot your password?</a>
+</form>

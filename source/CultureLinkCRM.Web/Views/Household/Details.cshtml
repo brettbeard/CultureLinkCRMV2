@@ -1,0 +1,42 @@
+@model Household
+@{ ViewData["Title"] = Model.HouseholdName; }
+<h1>@Model.HouseholdName</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+}
+
+<p><strong>Mail preference:</strong> @Model.MailPreference</p>
+
+<h4 class="mt-3">Addresses</h4>
+<ul>
+    @foreach (var a in Model.Addresses)
+    {
+        <li>@a.Type: @a.Street1, @a.City @a.StateProvince @a.PostalCode @a.Country @(a.IsPrimary ? "(primary)" : "")</li>
+    }
+</ul>
+<h4>Phones</h4>
+<ul>
+    @foreach (var p in Model.Phones)
+    {
+        <li>@p.Type: @p.Number @(p.IsPrimary ? "(primary)" : "")</li>
+    }
+</ul>
+<h4>Emails</h4>
+<ul>
+    @foreach (var e in Model.Emails)
+    {
+        <li>@e.Type: @e.Address @(e.IsPrimary ? "(primary)" : "")</li>
+    }
+</ul>
+
+<h4>Members</h4>
+<ul>
+    @foreach (var m in Model.Members)
+    {
+        <li><a asp-controller="Person" asp-action="Details" asp-route-id="@m.Id">@m.FullName</a></li>
+    }
+</ul>
+
+<a asp-action="Index">Back to list</a>

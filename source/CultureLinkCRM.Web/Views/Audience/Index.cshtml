@@ -1,0 +1,17 @@
+@model IReadOnlyList<Audience>
+@{ ViewData["Title"] = "Audiences"; }
+<h1>Audiences</h1>
+<a asp-action="Create" class="btn btn-primary mb-3">New Audience</a>
+<table class="table table-striped">
+    <thead><tr><th>Name</th><th>Segments</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var a in Model)
+    {
+        <tr>
+            <td>@a.Name</td>
+            <td>@string.Join(", ", a.SegmentLinks.Select(l => l.Segment?.Name))</td>
+            <td><a asp-action="Details" asp-route-id="@a.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

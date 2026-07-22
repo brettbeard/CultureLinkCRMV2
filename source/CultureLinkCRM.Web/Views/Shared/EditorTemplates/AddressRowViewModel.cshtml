@@ -1,0 +1,32 @@
+@model CultureLinkCRM.Web.Models.AddressRowViewModel
+<div class="row g-2 align-items-end border rounded p-2 mb-2">
+    <div class="col-md-2">
+        <label class="form-label">Type</label>
+        @Html.DropDownListFor(m => m.Type, Html.GetEnumSelectList<CultureLinkCRM.Core.Enums.AddressType>(), new { @class = "form-select" })
+    </div>
+    <div class="col-md-1 form-check ms-2">
+        <input asp-for="IsPrimary" class="form-check-input" />
+        <label class="form-check-label" asp-for="IsPrimary">Primary</label>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Street</label>
+        <input asp-for="Street1" class="form-control" placeholder="Street 1" />
+        <input asp-for="Street2" class="form-control mt-1" placeholder="Street 2" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">City</label>
+        <input asp-for="City" class="form-control" />
+    </div>
+    <div class="col-md-1">
+        <label class="form-label">State</label>
+        <input asp-for="StateProvince" class="form-control" />
+    </div>
+    <div class="col-md-1">
+        <label class="form-label">Postal</label>
+        <input asp-for="PostalCode" class="form-control" />
+    </div>
+    <div class="col-md-1">
+        <label class="form-label">Country</label>
+        <input asp-for="Country" class="form-control" />
+    </div>
+</div>

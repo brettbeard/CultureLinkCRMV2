@@ -1,0 +1,111 @@
+@model Person
+@{
+    ViewData["Title"] = Model.FullName;
+    var contact = (EffectiveContactInfo)ViewBag.EffectiveContact;
+    var donorStatus = (DonorStatus)ViewBag.DonorStatus;
+    var donations = (IReadOnlyList<Donation>)ViewBag.Donations;
+    var orders = (IReadOnlyList<CurriculumOrder>)ViewBag.CurriculumOrders;
+    var engagements = (IReadOnlyList<Engagement>)ViewBag.Engagements;
+    var seminarAttendances = (IReadOnlyList<SeminarAttendance>)ViewBag.SeminarAttendances;
+}
+
+<h1>@Model.FullName</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+}
+
+<h4 class="mt-3">Household</h4>
+<p>@(Model.Household?.HouseholdName ?? "(none)")</p>
+
+<h4>Effective Contact Info</h4>
+<p><strong>Addresses</strong> @(contact.AddressFromHousehold ? "(from Household)" : "")</p>
+<ul>
+    @foreach (var a in contact.Addresses.Any() ? contact.Addresses.Select(a => $"{a.Type}: {a.Street1}, {a.City} {a.StateProvince} {a.PostalCode} {a.Country}") : contact.HouseholdAddresses.Select(a => $"{a.Type}: {a.Street1}, {a.City} {a.StateProvince} {a.PostalCode} {a.Country}"))
+    {
+        <li>@a</li>
+    }
+</ul>
+<p><strong>Phones</strong> @(contact.PhoneFromHousehold ? "(from Household)" : "")</p>
+<ul>
+    @foreach (var p in contact.Phones.Any() ? contact.Phones.Select(p => $"{p.Type}: {p.Number}") : contact.HouseholdPhones.Select(p => $"{p.Type}: {p.Number}"))
+    {
+        <li>@p</li>
+    }
+</ul>
+<p><strong>Emails</strong> @(contact.EmailFromHousehold ? "(from Household)" : "")</p>
+<ul>
+    @foreach (var e in contact.Emails.Any() ? contact.Emails.Select(e => $"{e.Type}: {e.Address}") : contact.HouseholdEmails.Select(e => $"{e.Type}: {e.Address}"))
+    {
+        <li>@e</li>
+    }
+</ul>
+
+<h4>Organizations</h4>
+<ul>
+    @foreach (var link in Model.OrganizationLinks)
+    {
+        <li>@link.Organization?.Name @(!string.IsNullOrWhiteSpace(link.RoleTitle) ? $"({link.RoleTitle})" : "")</li>
+    }
+</ul>
+
+<h4>Networks</h4>
+<ul>
+    @foreach (var link in Model.NetworkLinks)
+    {
+        <li>@link.Network?.Name</li>
+    }
+</ul>
+
+<h4>Segments</h4>
+<p><strong>Donor status:</strong> @donorStatus</p>
+<ul>
+    @foreach (var a in Model.SegmentAssignments.Where(a => a.Segment != null && !a.Segment.IsComputed))
+    {
+        <li>@a.Segment!.Name</li>
+    }
+</ul>
+
+<h4>Donations @if (User.IsInRole("Admin") || User.IsInRole("Superuser")) { <a asp-controller="Donation" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-sm btn-outline-primary">Add</a> }</h4>
+<table class="table table-sm">
+    <thead><tr><th>Date</th><th>Amount</th><th>Fund/Project</th></tr></thead>
+    <tbody>
+    @foreach (var d in donations)
+    {
+        <tr><td>@d.DonationDate.ToShortDateString()</td><td>@d.Amount.ToString("C")</td><td>@d.FundProjectDesignation</td></tr>
+    }
+    </tbody>
+</table>
+
+<h4>Curriculum Orders @if (User.IsInRole("Admin") || User.IsInRole("Superuser")) { <a asp-controller="CurriculumOrder" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-sm btn-outline-primary">Add</a> }</h4>
+<table class="table table-sm">
+    <thead><tr><th>Date</th><th>Quantity</th><th>Linked Org</th></tr></thead>
+    <tbody>
+    @foreach (var o in orders)
+    {
+        <tr><td>@o.OrderDate.ToShortDateString()</td><td>@o.Quantity</td><td>@o.LinkedOrganization?.Name</td></tr>
+    }
+    </tbody>
+</table>
+
+<h4>Engagements @if (User.IsInRole("Admin") || User.IsInRole("Superuser")) { <a asp-controller="Engagement" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-sm btn-outline-primary">Add</a> }</h4>
+<table class="table table-sm">
+    <thead><tr><th>Type</th><th>Start</th><th>End</th><th>Notes</th></tr></thead>
+    <tbody>
+    @foreach (var e in engagements)
+    {
+        <tr><td>@e.EngagementType?.Name</td><td>@e.StartDate.ToShortDateString()</td><td>@(e.EndDate?.ToShortDateString() ?? "(ongoing)")</td><td>@e.Notes</td></tr>
+    }
+    </tbody>
+</table>
+
+<h4>Seminar Attendance</h4>
+<ul>
+    @foreach (var a in seminarAttendances)
+    {
+        <li><a asp-controller="Seminar" asp-action="Details" asp-route-id="@a.SeminarId">@a.Seminar?.City @a.Seminar?.Year</a></li>
+    }
+</ul>
+
+<a asp-action="Index">Back to list</a>

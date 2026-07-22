@@ -1,0 +1,29 @@
+@model PagedResult<Household>
+@{ ViewData["Title"] = "Households"; }
+<h1>Households</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">New Household</a>
+}
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <input name="name" value="@ViewBag.NameFilter" class="form-control" placeholder="Household name" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary">Filter</button>
+    </div>
+</form>
+<table class="table table-striped">
+    <thead><tr><th>Household Name</th><th>Members</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var h in Model.Items)
+    {
+        <tr>
+            <td>@h.HouseholdName</td>
+            <td>@h.Members.Count</td>
+            <td><a asp-action="Details" asp-route-id="@h.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p>Page @Model.PageNumber of @Model.TotalPages (@Model.TotalCount total)</p>

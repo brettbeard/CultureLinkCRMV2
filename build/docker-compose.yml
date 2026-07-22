@@ -1,0 +1,14 @@
+# Stub only — no active compose configuration yet.
+#
+# Intended services once source/ is scaffolded:
+#   app:
+#     - built from build/Dockerfile
+#     - env vars (placeholder names): ASPNETCORE_ENVIRONMENT, CONNECTIONSTRINGS__DEFAULT
+#     - depends_on: db
+#   db:
+#     - image: mcr.microsoft.com/mssql/server
+#     - env vars (placeholder names): ACCEPT_EULA, MSSQL_SA_PASSWORD
+#     - volume for persisting data
+#
+# Do not add active services until the Visual Studio solution
+# and .csproj projects exist under source/.

@@ -1,0 +1,51 @@
+@model OrganizationIndexViewModel
+@{ ViewData["Title"] = "Organizations"; }
+<h1>Organizations</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">New Organization</a>
+}
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-2">
+        <input name="Name" value="@Model.Filter.Name" class="form-control" placeholder="Name" />
+    </div>
+    <div class="col-md-2">
+        <input name="City" value="@Model.Filter.City" class="form-control" placeholder="City" />
+    </div>
+    <div class="col-md-2">
+        <select name="SegmentId" class="form-select" asp-items="Model.SegmentOptions">
+            <option value="">-- Segment --</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="NetworkId" class="form-select" asp-items="Model.NetworkOptions">
+            <option value="">-- Network --</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Added from</label>
+        <input type="date" name="AddedFrom" value="@Model.Filter.AddedFrom?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Added to</label>
+        <input type="date" name="AddedTo" value="@Model.Filter.AddedTo?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary">Filter</button>
+    </div>
+</form>
+<a asp-controller="Export" asp-action="Organizations" asp-all-route-data="@(new Dictionary<string,string?> { ["Name"] = Model.Filter.Name, ["City"] = Model.Filter.City, ["SegmentId"] = Model.Filter.SegmentId?.ToString(), ["NetworkId"] = Model.Filter.NetworkId?.ToString(), ["AddedFrom"] = Model.Filter.AddedFrom?.ToString("yyyy-MM-dd"), ["AddedTo"] = Model.Filter.AddedTo?.ToString("yyyy-MM-dd") })" class="btn btn-outline-primary mb-3">Export to Excel</a>
+<table class="table table-striped">
+    <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var o in Model.Results.Items)
+    {
+        <tr>
+            <td>@o.Name</td>
+            <td>@o.OrganizationType</td>
+            <td><a asp-action="Details" asp-route-id="@o.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p>Page @Model.Results.PageNumber of @Model.Results.TotalPages (@Model.Results.TotalCount total)</p>

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CultureLinkCRM.Core/CultureLinkCRM.Core.csproj" />
+  <Project Path="CultureLinkCRM.Infrastructure/CultureLinkCRM.Infrastructure.csproj" />
+  <Project Path="CultureLinkCRM.Tests/CultureLinkCRM.Tests.csproj" />
+  <Project Path="CultureLinkCRM.Web/CultureLinkCRM.Web.csproj" />
+</Solution>

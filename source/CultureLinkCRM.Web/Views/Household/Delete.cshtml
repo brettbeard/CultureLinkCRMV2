@@ -1,0 +1,13 @@
+@model Household
+@{ ViewData["Title"] = "Delete Household"; }
+<h1>Delete Household</h1>
+<p>Are you sure you want to delete <strong>@Model.HouseholdName</strong>?</p>
+@if (Model.Members.Count > 0)
+{
+    <div class="alert alert-warning">This Household has @Model.Members.Count member(s) attached and cannot be deleted until they are reassigned or unlinked.</div>
+}
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Cancel</a>
+</form>

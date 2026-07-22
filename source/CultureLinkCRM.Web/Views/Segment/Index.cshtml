@@ -1,0 +1,20 @@
+@model IReadOnlyList<Segment>
+@{ ViewData["Title"] = "Segments"; }
+<h1>Segments</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">New Segment</a>
+}
+<table class="table table-striped">
+    <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.Name</td>
+            <td>@(s.IsComputed ? "Computed (system)" : "Manual")</td>
+            <td><a asp-action="Details" asp-route-id="@s.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

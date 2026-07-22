@@ -1,0 +1,24 @@
+@model DonationFormViewModel
+@{ ViewData["Title"] = "Record Donation"; }
+<h1>Record Donation</h1>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="PersonId" />
+    <input type="hidden" asp-for="OrganizationId" />
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="form-label" asp-for="Amount"></label>
+            <input asp-for="Amount" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" asp-for="DonationDate"></label>
+            <input asp-for="DonationDate" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" asp-for="FundProjectDesignation"></label>
+            <input asp-for="FundProjectDesignation" class="form-control" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>

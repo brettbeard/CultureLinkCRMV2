@@ -1,0 +1,32 @@
+@model Audience
+@{
+    ViewData["Title"] = Model.Name;
+    var members = (IReadOnlyList<AudienceMemberRow>)ViewBag.Members;
+}
+<h1>@Model.Name</h1>
+<p><strong>Segments (OR):</strong> @string.Join(", ", Model.SegmentLinks.Select(l => l.Segment?.Name))</p>
+
+<a asp-controller="Export" asp-action="Audience" asp-route-id="@Model.Id" class="btn btn-outline-primary mb-3">Export to Excel</a>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-outline-danger mb-3">Delete Audience</button>
+</form>
+
+<p>@members.Count matching row(s), household-deduplicated.</p>
+<table class="table table-sm">
+    <thead><tr><th>Kind</th><th>Name</th><th>Address</th><th>Phone</th><th>Email</th></tr></thead>
+    <tbody>
+    @foreach (var m in members)
+    {
+        <tr>
+            <td>@m.Kind</td>
+            <td>@m.DisplayName</td>
+            <td>@m.Street1, @m.City @m.StateProvince @m.PostalCode @m.Country</td>
+            <td>@m.Phone</td>
+            <td>@m.Email</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Index">Back to list</a>

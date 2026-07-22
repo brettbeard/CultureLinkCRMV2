@@ -1,0 +1,37 @@
+@model Network
+@{ ViewData["Title"] = Model.Name; }
+<h1>@Model.Name</h1>
+<p><em>@Model.NetworkType</em></p>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+}
+
+<p><strong>Parent network:</strong> @(Model.ParentNetwork?.Name ?? "(none)")</p>
+
+<h4>Child Networks</h4>
+<ul>
+    @foreach (var c in Model.ChildNetworks)
+    {
+        <li>@c.Name</li>
+    }
+</ul>
+
+<h4>Linked People</h4>
+<ul>
+    @foreach (var l in Model.PersonLinks)
+    {
+        <li><a asp-controller="Person" asp-action="Details" asp-route-id="@l.PersonId">@l.Person?.FullName</a></li>
+    }
+</ul>
+
+<h4>Linked Organizations</h4>
+<ul>
+    @foreach (var l in Model.OrganizationLinks)
+    {
+        <li><a asp-controller="Organization" asp-action="Details" asp-route-id="@l.OrganizationId">@l.Organization?.Name</a></li>
+    }
+</ul>
+
+<a asp-action="Index">Back to list</a>

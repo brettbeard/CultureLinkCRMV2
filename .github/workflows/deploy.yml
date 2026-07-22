@@ -1,0 +1,8 @@
+# Stub only — no active workflow steps yet.
+#
+# Intended purpose: build the Docker image (build/Dockerfile) and
+# deploy CultureLinkCRM to its target hosting environment once that
+# environment is decided (see docs/deployment.md).
+#
+# Placeholder name for future reference:
+name: deploy

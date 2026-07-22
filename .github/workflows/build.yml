@@ -1,0 +1,8 @@
+# Stub only — no active workflow steps yet.
+#
+# Intended purpose: build the solution and run the xUnit test suite
+# on pushes and pull requests once the Visual Studio solution and
+# .csproj projects exist under source/.
+#
+# Placeholder name for future reference:
+name: build

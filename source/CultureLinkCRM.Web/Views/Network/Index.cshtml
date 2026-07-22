@@ -1,0 +1,21 @@
+@model IReadOnlyList<Network>
+@{ ViewData["Title"] = "Networks"; }
+<h1>Networks</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">New Network</a>
+}
+<table class="table table-striped">
+    <thead><tr><th>Name</th><th>Type</th><th>Parent</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var n in Model)
+    {
+        <tr>
+            <td>@n.Name</td>
+            <td>@n.NetworkType</td>
+            <td>@n.ParentNetwork?.Name</td>
+            <td><a asp-action="Details" asp-route-id="@n.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

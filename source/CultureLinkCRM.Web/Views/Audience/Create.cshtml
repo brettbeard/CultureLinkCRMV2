@@ -1,0 +1,23 @@
+@model AudienceFormViewModel
+@{ ViewData["Title"] = "New Audience"; }
+<h1>New Audience</h1>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="col-md-6">
+        <label class="form-label" asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <h5 class="mt-3">Segments to combine (OR)</h5>
+    @foreach (var option in Model.SegmentOptions)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="SegmentIds" value="@option.Value" id="seg-@option.Value" />
+            <label class="form-check-label" for="seg-@option.Value">@option.Text</label>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-link mt-3">Cancel</a>
+</form>

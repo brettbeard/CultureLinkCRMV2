@@ -1,0 +1,12 @@
+@model Segment
+<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="col-md-6">
+        <label class="form-label" asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-link mt-3">Cancel</a>
+</form>

@@ -1,0 +1,9 @@
+@model Organization
+@{ ViewData["Title"] = "Delete Organization"; }
+<h1>Delete Organization</h1>
+<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Cancel</a>
+</form>

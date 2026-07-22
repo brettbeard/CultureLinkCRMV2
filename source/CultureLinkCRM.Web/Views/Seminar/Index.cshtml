@@ -1,0 +1,22 @@
+@model IReadOnlyList<Seminar>
+@{ ViewData["Title"] = "Seminars"; }
+<h1>Seminars</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">New Seminar</a>
+}
+<table class="table table-striped">
+    <thead><tr><th>City</th><th>Year</th><th>Parent</th><th>Attendees</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.City</td>
+            <td>@s.Year</td>
+            <td>@(s.ParentSeminar is not null ? $"{s.ParentSeminar.City} {s.ParentSeminar.Year}" : "")</td>
+            <td>@s.Attendances.Count</td>
+            <td><a asp-action="Details" asp-route-id="@s.Id">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

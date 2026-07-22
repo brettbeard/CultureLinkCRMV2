@@ -1,0 +1,23 @@
+@model IReadOnlyList<User>
+@{ ViewData["Title"] = "Users"; }
+<h1>Users</h1>
+<a asp-action="Create" class="btn btn-primary mb-3">New User</a>
+<table class="table table-striped">
+    <thead><tr><th>Email</th><th>Role</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.Email</td>
+            <td>@u.Role</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@u.Id">Edit</a>
+                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

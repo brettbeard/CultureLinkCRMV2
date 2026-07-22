@@ -1,0 +1,75 @@
+@model Segment
+@{ ViewData["Title"] = Model.Name; }
+<h1>@Model.Name</h1>
+@if (Model.IsComputed)
+{
+    <p class="text-muted">This is a system-computed Segment (Donor status). It cannot be edited, deleted, or manually assigned.</p>
+}
+else if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+}
+
+<h4 class="mt-3">Assigned Contacts</h4>
+<table class="table table-sm">
+    <thead><tr><th>Contact</th><th>Date Assigned</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var a in Model.Assignments)
+    {
+        <tr>
+            <td>
+                @if (a.PersonId is not null)
+                {
+                    <a asp-controller="Person" asp-action="Details" asp-route-id="@a.PersonId">@a.Person?.FullName</a>
+                }
+                else
+                {
+                    <a asp-controller="Organization" asp-action="Details" asp-route-id="@a.OrganizationId">@a.Organization?.Name</a>
+                }
+            </td>
+            <td>@a.DateAssigned.ToShortDateString()</td>
+            <td>
+                @if (!Model.IsComputed && (User.IsInRole("Admin") || User.IsInRole("Superuser")))
+                {
+                    <form asp-action="Unassign" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="segmentId" value="@Model.Id" />
+                        <input type="hidden" name="assignmentId" value="@a.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (!Model.IsComputed && (User.IsInRole("Admin") || User.IsInRole("Superuser")))
+{
+    <h5>Assign a Person</h5>
+    <form asp-action="Assign" method="post" class="row g-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="segmentId" value="@Model.Id" />
+        <div class="col-md-4">
+            <select name="personId" class="form-select" asp-items="(IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.PersonOptions">
+                <option value="">-- select --</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-secondary">Assign</button></div>
+    </form>
+
+    <h5 class="mt-3">Assign an Organization</h5>
+    <form asp-action="Assign" method="post" class="row g-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="segmentId" value="@Model.Id" />
+        <div class="col-md-4">
+            <select name="organizationId" class="form-select" asp-items="(IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.OrganizationOptions">
+                <option value="">-- select --</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-secondary">Assign</button></div>
+    </form>
+}
+
+<p class="mt-3"><a asp-action="Index">Back to list</a></p>

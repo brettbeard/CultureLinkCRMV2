@@ -1,0 +1,28 @@
+@model OrganizationFormViewModel
+
+<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label" asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" asp-for="OrganizationType"></label>
+            @Html.DropDownListFor(m => m.OrganizationType, Html.GetEnumSelectList<OrganizationType>(), new { @class = "form-select" })
+        </div>
+    </div>
+
+    <h5 class="mt-4">Addresses</h5>
+    @Html.EditorFor(m => m.Addresses)
+    <h5 class="mt-3">Phones</h5>
+    @Html.EditorFor(m => m.Phones)
+    <h5 class="mt-3">Emails</h5>
+    @Html.EditorFor(m => m.Emails)
+
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-link mt-3">Cancel</a>
+</form>

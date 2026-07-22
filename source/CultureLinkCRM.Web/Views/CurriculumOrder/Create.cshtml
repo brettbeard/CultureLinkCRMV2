@@ -1,0 +1,26 @@
+@model CurriculumOrderFormViewModel
+@{ ViewData["Title"] = "Record Curriculum Order"; }
+<h1>Record Curriculum Order</h1>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="PersonId" />
+    <input type="hidden" asp-for="OrganizationId" />
+    <div class="row g-2">
+        <div class="col-md-2">
+            <label class="form-label" asp-for="Quantity"></label>
+            <input asp-for="Quantity" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" asp-for="OrderDate"></label>
+            <input asp-for="OrderDate" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Linked church/ministry (optional)</label>
+            <select asp-for="LinkedOrganizationId" asp-items="(IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.LinkedOrganizationOptions" class="form-select">
+                <option value="">-- none --</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>

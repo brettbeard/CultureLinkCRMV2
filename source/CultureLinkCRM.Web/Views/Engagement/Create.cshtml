@@ -1,0 +1,28 @@
+@model EngagementFormViewModel
+@{ ViewData["Title"] = "Record Engagement"; }
+<h1>Record Engagement</h1>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="PersonId" />
+    <input type="hidden" asp-for="OrganizationId" />
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="form-label">Type</label>
+            <select asp-for="EngagementTypeId" asp-items="(IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.TypeOptions" class="form-select"></select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" asp-for="StartDate"></label>
+            <input asp-for="StartDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" asp-for="EndDate"></label>
+            <input asp-for="EndDate" class="form-control" />
+        </div>
+        <div class="col-md-12">
+            <label class="form-label" asp-for="Notes"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>

@@ -1,0 +1,50 @@
+@model Seminar
+@{ ViewData["Title"] = $"{Model.City} {Model.Year}"; }
+<h1>@Model.City @Model.Year</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+}
+
+<p><strong>Parent seminar:</strong> @(Model.ParentSeminar is not null ? $"{Model.ParentSeminar.City} {Model.ParentSeminar.Year}" : "(none)")</p>
+
+<h4 class="mt-3">Attendees</h4>
+<table class="table table-sm">
+    <thead><tr><th>Person</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var a in Model.Attendances)
+    {
+        <tr>
+            <td><a asp-controller="Person" asp-action="Details" asp-route-id="@a.PersonId">@a.Person?.FullName</a></td>
+            <td>
+                @if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+                {
+                    <form asp-action="RemoveAttendance" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="seminarId" value="@Model.Id" />
+                        <input type="hidden" name="attendanceId" value="@a.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+{
+    <form asp-action="RecordAttendance" method="post" class="row g-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="seminarId" value="@Model.Id" />
+        <div class="col-md-4">
+            <select name="personId" class="form-select" asp-items="(IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.PersonOptions">
+                <option value="">-- select --</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-secondary">Record Attendance</button></div>
+    </form>
+}
+
+<p class="mt-3"><a asp-action="Index">Back to list</a></p>

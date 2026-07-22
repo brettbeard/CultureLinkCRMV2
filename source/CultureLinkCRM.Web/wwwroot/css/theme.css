@@ -302,3 +302,129 @@ body.sidebar-collapsed .app-sidebar .nav-link {
     display: block;
   }
 }
+
+/* ---------- Data grid pages (Serenity-style toolbar + AG Grid) ---------- */
+
+.page-toolbar h1 {
+  font-size: 1.5rem;
+}
+
+.grid-filter-card {
+  border-color: #e4e0d6;
+  background-color: #fff;
+}
+
+.grid-card {
+  border-color: #e4e0d6;
+}
+
+.grid-card .card-header {
+  background-color: #fff;
+  border-bottom-color: #e4e0d6;
+}
+
+.grid-card .card-footer {
+  background-color: #fff;
+  border-top-color: #e4e0d6;
+}
+
+.pager .page-link {
+  color: var(--cl-teal-dark);
+}
+
+.pager .page-item.active .page-link {
+  background-color: var(--cl-teal);
+  border-color: var(--cl-teal);
+  color: #fff;
+}
+
+.ag-theme-balham.ag-theme-culturelink {
+  --ag-font-family: "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --ag-font-size: 0.9rem;
+  --ag-foreground-color: var(--cl-ink);
+  --ag-header-foreground-color: #f2ece7;
+  --ag-header-background-color: var(--cl-ink-deep);
+  --ag-header-column-separator-color: rgba(255, 255, 255, 0.15);
+  --ag-header-column-resize-handle-color: rgba(255, 255, 255, 0.3);
+  --ag-odd-row-background-color: #faf9f5;
+  --ag-row-hover-color: #e6f2f0;
+  --ag-selected-row-background-color: #d7ebe8;
+  --ag-border-color: #e4e0d6;
+  --ag-row-border-color: #eeece3;
+  --ag-input-focus-border-color: var(--cl-teal);
+  --ag-range-selection-border-color: var(--cl-teal);
+  --ag-checkbox-checked-color: var(--cl-teal);
+  --ag-invalid-color: #b3261e;
+  --ag-border-radius: 0.375rem;
+}
+
+.ag-theme-culturelink .ag-header-cell-text {
+  font-weight: 600;
+}
+
+/* ---------- Forms, details, and general polish (Step 4) ---------- */
+
+.validation-summary-valid {
+  display: none;
+}
+
+.validation-summary-errors {
+  display: block;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: #fbeceb;
+  border: 1px solid #f1c4c0;
+  border-radius: 0.375rem;
+  color: #8a2c25;
+}
+
+.validation-summary-errors ul {
+  margin-bottom: 0;
+  padding-left: 1.1rem;
+}
+
+.section-card {
+  border-color: #e4e0d6;
+  margin-bottom: 1rem;
+}
+
+.section-card .card-header {
+  background-color: #fff;
+  border-bottom-color: #e4e0d6;
+  font-family: var(--cl-heading-font);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  color: #8a8071;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.badge-status-active {
+  background-color: var(--cl-teal-dark);
+  color: #fff;
+}
+
+.badge-status-lapsed {
+  background-color: var(--cl-gold);
+  color: var(--cl-ink);
+}
+
+.badge-status-none {
+  background-color: #e4e0d6;
+  color: var(--cl-ink);
+}
+
+.badge-tag {
+  background-color: var(--cl-cream);
+  color: var(--cl-brown-mid);
+  border: 1px solid #e4e0d6;
+  font-weight: 600;
+}
+
+.contact-row-card {
+  border-color: #e4e0d6;
+  background-color: #faf9f5;
+}

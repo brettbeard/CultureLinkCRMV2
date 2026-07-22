@@ -1,21 +1,92 @@
 @model IReadOnlyList<Network>
-@{ ViewData["Title"] = "Networks"; }
-<h1>Networks</h1>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">New Network</a>
-}
-<table class="table table-striped">
-    <thead><tr><th>Name</th><th>Type</th><th>Parent</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var n in Model)
+@{
+    ViewData["Title"] = "Networks";
+
+    var rows = Model.Select(n => new
     {
-        <tr>
-            <td>@n.Name</td>
-            <td>@n.NetworkType</td>
-            <td>@n.ParentNetwork?.Name</td>
-            <td><a asp-action="Details" asp-route-id="@n.Id">View</a></td>
-        </tr>
+        name = n.Name,
+        type = n.NetworkType.ToString(),
+        parent = n.ParentNetwork?.Name,
+        detailsUrl = Url.Action("Details", new { id = n.Id })
+    });
+    var rowsJson = System.Text.Json.JsonSerializer.Serialize(rows);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-theme-balham.min.css" />
+}
+
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">Networks</h1>
+    @if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New Network</a>
     }
-    </tbody>
-</table>
+</div>
+
+<div class="card grid-card">
+    <div class="card-header d-flex align-items-center justify-content-between gap-2">
+        <input id="quick-filter" type="search" class="form-control form-control-sm" style="max-width: 16rem;" placeholder="Search networks..." />
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-layout-three-columns me-1"></i>Columns
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 10rem;">
+                <li><label class="dropdown-item form-check py-1"><input type="checkbox" class="form-check-input column-toggle" data-field="type" checked /> Type</label></li>
+                <li><label class="dropdown-item form-check py-1"><input type="checkbox" class="form-check-input column-toggle" data-field="parent" checked /> Parent</label></li>
+            </ul>
+        </div>
+    </div>
+    <div id="network-grid" class="ag-theme-balham ag-theme-culturelink" style="height: 32rem; width: 100%;"></div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/ag-grid-community/ag-grid-community.min.js"></script>
+    <script>
+        (function () {
+            var rowData = @Html.Raw(rowsJson);
+
+            var columnDefs = [
+                {
+                    field: "name", headerName: "Name", flex: 2, minWidth: 200,
+                    cellRenderer: function (params) {
+                        var link = document.createElement("a");
+                        link.href = params.data.detailsUrl;
+                        link.textContent = params.value;
+                        return link;
+                    }
+                },
+                { field: "type", headerName: "Type", flex: 1, minWidth: 150 },
+                { field: "parent", headerName: "Parent", flex: 1, minWidth: 150 }
+            ];
+
+            var gridApi = agGrid.createGrid(document.getElementById("network-grid"), {
+                theme: "legacy",
+                columnDefs: columnDefs,
+                rowData: rowData,
+                rowHeight: 40,
+                headerHeight: 40,
+                suppressCellFocus: true,
+                pagination: true,
+                paginationPageSize: 25,
+                paginationPageSizeSelector: [10, 25, 50, 100],
+                onRowDoubleClicked: function (event) {
+                    if (event.data && event.data.detailsUrl) {
+                        window.location.href = event.data.detailsUrl;
+                    }
+                }
+            });
+
+            document.getElementById("quick-filter").addEventListener("input", function (e) {
+                gridApi.setGridOption("quickFilterText", e.target.value);
+            });
+
+            document.querySelectorAll(".column-toggle").forEach(function (checkbox) {
+                checkbox.addEventListener("change", function () {
+                    gridApi.setColumnsVisible([checkbox.dataset.field], checkbox.checked);
+                });
+            });
+        })();
+    </script>
+}

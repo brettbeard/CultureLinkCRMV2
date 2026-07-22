@@ -1,9 +1,13 @@
 @model Person
 @{ ViewData["Title"] = "Delete Person"; }
-<h1>Delete Person</h1>
-<p>Are you sure you want to delete <strong>@Model.FullName</strong>?</p>
-<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Cancel</a>
-</form>
+<div class="card section-card" style="max-width: 32rem;">
+    <div class="card-body">
+        <h5 class="d-flex align-items-center gap-2 text-danger"><i class="bi bi-exclamation-triangle"></i>Delete Person</h5>
+        <p>Are you sure you want to delete <strong>@Model.FullName</strong>? This cannot be undone.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

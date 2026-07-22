@@ -1,29 +1,96 @@
 @model PagedResult<Household>
-@{ ViewData["Title"] = "Households"; }
-<h1>Households</h1>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">New Household</a>
-}
-<form method="get" class="row g-2 mb-3">
-    <div class="col-md-3">
-        <input name="name" value="@ViewBag.NameFilter" class="form-control" placeholder="Household name" />
-    </div>
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-secondary">Filter</button>
-    </div>
-</form>
-<table class="table table-striped">
-    <thead><tr><th>Household Name</th><th>Members</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var h in Model.Items)
+@{
+    ViewData["Title"] = "Households";
+    string? nameFilter = ViewBag.NameFilter;
+
+    var rows = Model.Items.Select(h => new
     {
-        <tr>
-            <td>@h.HouseholdName</td>
-            <td>@h.Members.Count</td>
-            <td><a asp-action="Details" asp-route-id="@h.Id">View</a></td>
-        </tr>
+        name = h.HouseholdName,
+        members = h.Members.Count,
+        detailsUrl = Url.Action("Details", new { id = h.Id })
+    });
+    var rowsJson = System.Text.Json.JsonSerializer.Serialize(rows);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-theme-balham.min.css" />
+}
+
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">Households</h1>
+    @if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New Household</a>
     }
-    </tbody>
-</table>
-<p>Page @Model.PageNumber of @Model.TotalPages (@Model.TotalCount total)</p>
+</div>
+
+<div class="card grid-filter-card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Household name</label>
+                <input name="name" value="@nameFilter" class="form-control" placeholder="Search name" />
+            </div>
+            <div class="col-md-1 d-grid">
+                <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card grid-card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span class="text-muted small">@Model.TotalCount total</span>
+    </div>
+    <div id="household-grid" class="ag-theme-balham ag-theme-culturelink" style="height: 32rem; width: 100%;"></div>
+    <div class="card-footer d-flex align-items-center justify-content-end">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0 pager">
+                <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-name="@nameFilter" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                </li>
+                <li class="page-item disabled"><span class="page-link">Page @Model.PageNumber of @Math.Max(Model.TotalPages, 1)</span></li>
+                <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-name="@nameFilter" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/ag-grid-community/ag-grid-community.min.js"></script>
+    <script>
+        (function () {
+            var rowData = @Html.Raw(rowsJson);
+
+            var columnDefs = [
+                {
+                    field: "name", headerName: "Household Name", flex: 2, minWidth: 200,
+                    cellRenderer: function (params) {
+                        var link = document.createElement("a");
+                        link.href = params.data.detailsUrl;
+                        link.textContent = params.value;
+                        return link;
+                    }
+                },
+                { field: "members", headerName: "Members", flex: 1, minWidth: 100 }
+            ];
+
+            agGrid.createGrid(document.getElementById("household-grid"), {
+                theme: "legacy",
+                columnDefs: columnDefs,
+                rowData: rowData,
+                rowHeight: 40,
+                headerHeight: 40,
+                suppressCellFocus: true,
+                onRowDoubleClicked: function (event) {
+                    if (event.data && event.data.detailsUrl) {
+                        window.location.href = event.data.detailsUrl;
+                    }
+                }
+            });
+        })();
+    </script>
+}

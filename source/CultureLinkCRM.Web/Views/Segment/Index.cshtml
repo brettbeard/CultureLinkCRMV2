@@ -1,20 +1,75 @@
 @model IReadOnlyList<Segment>
-@{ ViewData["Title"] = "Segments"; }
-<h1>Segments</h1>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">New Segment</a>
-}
-<table class="table table-striped">
-    <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var s in Model)
+@{
+    ViewData["Title"] = "Segments";
+
+    var rows = Model.Select(s => new
     {
-        <tr>
-            <td>@s.Name</td>
-            <td>@(s.IsComputed ? "Computed (system)" : "Manual")</td>
-            <td><a asp-action="Details" asp-route-id="@s.Id">View</a></td>
-        </tr>
+        name = s.Name,
+        type = s.IsComputed ? "Computed (system)" : "Manual",
+        detailsUrl = Url.Action("Details", new { id = s.Id })
+    });
+    var rowsJson = System.Text.Json.JsonSerializer.Serialize(rows);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-theme-balham.min.css" />
+}
+
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">Segments</h1>
+    @if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New Segment</a>
     }
-    </tbody>
-</table>
+</div>
+
+<div class="card grid-card">
+    <div class="card-header">
+        <input id="quick-filter" type="search" class="form-control form-control-sm" style="max-width: 16rem;" placeholder="Search segments..." />
+    </div>
+    <div id="segment-grid" class="ag-theme-balham ag-theme-culturelink" style="height: 32rem; width: 100%;"></div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/ag-grid-community/ag-grid-community.min.js"></script>
+    <script>
+        (function () {
+            var rowData = @Html.Raw(rowsJson);
+
+            var columnDefs = [
+                {
+                    field: "name", headerName: "Name", flex: 2, minWidth: 200,
+                    cellRenderer: function (params) {
+                        var link = document.createElement("a");
+                        link.href = params.data.detailsUrl;
+                        link.textContent = params.value;
+                        return link;
+                    }
+                },
+                { field: "type", headerName: "Type", flex: 1, minWidth: 160 }
+            ];
+
+            var gridApi = agGrid.createGrid(document.getElementById("segment-grid"), {
+                theme: "legacy",
+                columnDefs: columnDefs,
+                rowData: rowData,
+                rowHeight: 40,
+                headerHeight: 40,
+                suppressCellFocus: true,
+                pagination: true,
+                paginationPageSize: 25,
+                paginationPageSizeSelector: [10, 25, 50, 100],
+                onRowDoubleClicked: function (event) {
+                    if (event.data && event.data.detailsUrl) {
+                        window.location.href = event.data.detailsUrl;
+                    }
+                }
+            });
+
+            document.getElementById("quick-filter").addEventListener("input", function (e) {
+                gridApi.setGridOption("quickFilterText", e.target.value);
+            });
+        })();
+    </script>
+}

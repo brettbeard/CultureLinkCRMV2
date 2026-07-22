@@ -1,5 +1,5 @@
 @model CultureLinkCRM.Web.Models.AddressRowViewModel
-<div class="row g-2 align-items-end border rounded p-2 mb-2">
+<div class="row g-2 align-items-end contact-row-card border rounded p-2 mb-2">
     <div class="col-md-2">
         <label class="form-label">Type</label>
         @Html.DropDownListFor(m => m.Type, Html.GetEnumSelectList<CultureLinkCRM.Core.Enums.AddressType>(), new { @class = "form-select" })

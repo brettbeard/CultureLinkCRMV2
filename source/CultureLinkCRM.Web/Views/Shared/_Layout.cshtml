@@ -1,4 +1,3 @@
-@* Placeholder branding (Ref: FR-14): real logo/colors/fonts must be sourced from culturelinkinc.org before go-live; not guessed here. *@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,66 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CultureLink CRM</title>
     <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600;700&display=swap" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CultureLinkCRM.Web.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CultureLink CRM</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            (function () {
+                if (window.localStorage.getItem("clcrm-sidebar-collapsed") === "1" && window.innerWidth >= 992) {
+                    document.body.classList.add("sidebar-collapsed");
+                }
+            })();
+        </script>
+        <div class="app-wrapper">
+            <partial name="_Sidebar" />
+            <div class="sidebar-backdrop" data-sidebar-backdrop></div>
+            <nav class="app-header">
+                <button type="button" class="sidebar-toggle-btn" data-sidebar-toggle aria-label="Toggle navigation">
+                    <i class="bi bi-list"></i>
                 </button>
-                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
-                    @if (User.Identity?.IsAuthenticated == true)
+                <ol class="breadcrumb app-breadcrumb ms-2 mb-0 flex-grow-1">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+                <div class="dropdown">
+                    <button class="btn btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle fs-5"></i>
+                        <span class="d-none d-sm-inline">@User.Identity!.Name</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Log out
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main class="app-main">
+                <div class="app-content-header">
+                    @if (TempData["Error"] is string errorMessage)
                     {
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Person" asp-action="Index">People</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Household" asp-action="Index">Households</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Organization" asp-action="Index">Organizations</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Network" asp-action="Index">Networks</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Segment" asp-action="Index">Segments</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Seminar" asp-action="Index">Seminars</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" asp-controller="Audience" asp-action="Index">Audiences</a></li>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item"><a class="nav-link text-white" asp-controller="UserAdmin" asp-action="Index">Users</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" asp-controller="Settings" asp-action="Index">Settings</a></li>
-                            }
-                        </ul>
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-flex">
-                            @Html.AntiForgeryToken()
-                            <span class="navbar-text text-white me-2">@User.Identity!.Name</span>
-                            <button type="submit" class="btn btn-outline-light btn-sm">Log out</button>
-                        </form>
+                        <div class="alert alert-danger">@errorMessage</div>
                     }
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        @if (TempData["Error"] is string errorMessage)
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CultureLink CRM
+                <div class="app-content">
+                    @RenderBody()
+                </div>
+            </main>
+            <footer class="app-footer">
+                &copy; 2026 - CultureLink CRM
+            </footer>
         </div>
-    </footer>
+    }
+    else
+    {
+        <header class="border-bottom bg-white">
+            <div class="container py-3 d-flex align-items-center gap-2">
+                <i class="bi bi-compass brand-mark fs-3"></i>
+                <span class="fs-4"><span class="brand-culture">Culture</span><span class="brand-link">Link</span> CRM</span>
+            </div>
+        </header>
+        <div class="container py-4">
+            @if (TempData["Error"] is string errorMessage)
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/shell.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

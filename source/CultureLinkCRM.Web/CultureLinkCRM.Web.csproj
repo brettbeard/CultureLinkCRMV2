@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\CultureLinkCRM.Core\CultureLinkCRM.Core.csproj" />
@@ -13,6 +13,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>7f9dbd03-d850-43c3-a539-ae000b2e547b</UserSecretsId>
   </PropertyGroup>
 
 </Project>

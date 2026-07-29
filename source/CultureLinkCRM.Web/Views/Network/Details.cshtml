@@ -1,37 +1,93 @@
 @model Network
-@{ ViewData["Title"] = Model.Name; }
-<h1>@Model.Name</h1>
-<p><em>@Model.NetworkType</em></p>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+@{
+    ViewData["Title"] = Model.Name;
+    var canEdit = User.IsInRole("Admin") || User.IsInRole("Superuser");
 }
 
-<p><strong>Parent network:</strong> @(Model.ParentNetwork?.Name ?? "(none)")</p>
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0">@Model.Name</h1>
+    <span class="badge badge-tag">@Model.NetworkType</span>
+    <div class="ms-auto d-flex gap-2">
+        @if (canEdit)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Delete</a>
+        }
+    </div>
+</div>
 
-<h4>Child Networks</h4>
-<ul>
-    @foreach (var c in Model.ChildNetworks)
-    {
-        <li>@c.Name</li>
-    }
-</ul>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-diagram-3 me-2"></i>Network Details</div>
+    <div class="card-body">
+        <strong>Parent network:</strong>
+        @if (Model.ParentNetwork is not null)
+        {
+            <a asp-action="Details" asp-route-id="@Model.ParentNetwork.Id">@Model.ParentNetwork.Name</a>
+        }
+        else
+        {
+            <span class="text-muted">(none)</span>
+        }
+    </div>
+</div>
 
-<h4>Linked People</h4>
-<ul>
-    @foreach (var l in Model.PersonLinks)
-    {
-        <li><a asp-controller="Person" asp-action="Details" asp-route-id="@l.PersonId">@l.Person?.FullName</a></li>
-    }
-</ul>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-diagram-2 me-2"></i>Child Networks</div>
+    <div class="card-body">
+        @if (Model.ChildNetworks.Any())
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var c in Model.ChildNetworks)
+                {
+                    <li class="mb-1"><a asp-action="Details" asp-route-id="@c.Id">@c.Name</a></li>
+                }
+            </ul>
+        }
+        else
+        {
+            <span class="empty-state">No child networks.</span>
+        }
+    </div>
+</div>
 
-<h4>Linked Organizations</h4>
-<ul>
-    @foreach (var l in Model.OrganizationLinks)
-    {
-        <li><a asp-controller="Organization" asp-action="Details" asp-route-id="@l.OrganizationId">@l.Organization?.Name</a></li>
-    }
-</ul>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-people me-2"></i>Linked People &amp; Organizations</div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h6 class="text-uppercase small text-muted mb-2">Linked People</h6>
+                @if (Model.PersonLinks.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var l in Model.PersonLinks)
+                        {
+                            <li class="mb-1"><a asp-controller="Person" asp-action="Details" asp-route-id="@l.PersonId">@l.Person?.FullName</a></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="empty-state">No people linked.</span>
+                }
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-uppercase small text-muted mb-2">Linked Organizations</h6>
+                @if (Model.OrganizationLinks.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var l in Model.OrganizationLinks)
+                        {
+                            <li class="mb-1"><a asp-controller="Organization" asp-action="Details" asp-route-id="@l.OrganizationId">@l.Organization?.Name</a></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="empty-state">No organizations linked.</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
-<a asp-action="Index">Back to list</a>
+<a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to list</a>

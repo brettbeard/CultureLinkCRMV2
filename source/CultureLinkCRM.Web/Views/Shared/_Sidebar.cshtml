@@ -1,0 +1,80 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    bool IsActive(string controller) => string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase);
+    string ActiveClass(string controller) => IsActive(controller) ? "nav-link active" : "nav-link";
+}
+<aside class="app-sidebar">
+    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+        <i class="bi bi-compass brand-mark"></i>
+        <span class="brand-text"><span class="brand-culture">Culture</span><span class="brand-link">Link</span> CRM</span>
+    </a>
+    <div class="sidebar-wrapper">
+        <nav>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="@ActiveClass("Home")" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i><p>Dashboard</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="nav-header">Directory</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="@ActiveClass("Person")" asp-controller="Person" asp-action="Index">
+                        <i class="bi bi-people"></i><p>People</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="@ActiveClass("Household")" asp-controller="Household" asp-action="Index">
+                        <i class="bi bi-house-door"></i><p>Households</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="@ActiveClass("Organization")" asp-controller="Organization" asp-action="Index">
+                        <i class="bi bi-building"></i><p>Organizations</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="@ActiveClass("Network")" asp-controller="Network" asp-action="Index">
+                        <i class="bi bi-diagram-3"></i><p>Networks</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="nav-header">Engagement</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="@ActiveClass("Segment")" asp-controller="Segment" asp-action="Index">
+                        <i class="bi bi-tags"></i><p>Segments</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="@ActiveClass("Seminar")" asp-controller="Seminar" asp-action="Index">
+                        <i class="bi bi-mortarboard"></i><p>Seminars</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="@ActiveClass("Audience")" asp-controller="Audience" asp-action="Index">
+                        <i class="bi bi-broadcast"></i><p>Audiences</p>
+                    </a>
+                </li>
+            </ul>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="nav-header">Administration</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="@ActiveClass("UserAdmin")" asp-controller="UserAdmin" asp-action="Index">
+                            <i class="bi bi-person-badge"></i><p>Users</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="@ActiveClass("Settings")" asp-controller="Settings" asp-action="Index">
+                            <i class="bi bi-gear"></i><p>Settings</p>
+                        </a>
+                    </li>
+                </ul>
+            }
+        </nav>
+    </div>
+</aside>

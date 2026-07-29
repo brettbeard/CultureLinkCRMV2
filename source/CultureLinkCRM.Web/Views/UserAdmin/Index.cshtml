@@ -1,23 +1,90 @@
 @model IReadOnlyList<User>
-@{ ViewData["Title"] = "Users"; }
-<h1>Users</h1>
-<a asp-action="Create" class="btn btn-primary mb-3">New User</a>
-<table class="table table-striped">
-    <thead><tr><th>Email</th><th>Role</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var u in Model)
+@{
+    ViewData["Title"] = "Users";
+
+    var rows = Model.Select(u => new
     {
-        <tr>
-            <td>@u.Email</td>
-            <td>@u.Role</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@u.Id">Edit</a>
-                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+        email = u.Email,
+        role = u.Role.ToString(),
+        editUrl = Url.Action("Edit", new { id = u.Id }),
+        deleteUrl = Url.Action("Delete", new { id = u.Id })
+    });
+    var rowsJson = System.Text.Json.JsonSerializer.Serialize(rows);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-theme-balham.min.css" />
+}
+
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">Users</h1>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New User</a>
+</div>
+
+<div class="card grid-card">
+    <div class="card-header">
+        <input id="quick-filter" type="search" class="form-control form-control-sm" style="max-width: 16rem;" placeholder="Search users..." />
+    </div>
+    <div id="user-grid" class="ag-theme-balham ag-theme-culturelink" style="height: 32rem; width: 100%;"></div>
+</div>
+
+<form id="delete-user-form" method="post" action="" class="d-none">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="~/lib/ag-grid-community/ag-grid-community.min.js"></script>
+    <script>
+        (function () {
+            var rowData = @Html.Raw(rowsJson);
+            var deleteForm = document.getElementById("delete-user-form");
+
+            var columnDefs = [
+                { field: "email", headerName: "Email", flex: 2, minWidth: 220 },
+                { field: "role", headerName: "Role", flex: 1, minWidth: 120 },
+                {
+                    headerName: "", flex: 1, minWidth: 160, sortable: false, filter: false,
+                    cellRenderer: function (params) {
+                        var container = document.createElement("div");
+                        container.className = "d-flex gap-2";
+
+                        var editLink = document.createElement("a");
+                        editLink.href = params.data.editUrl;
+                        editLink.className = "btn btn-sm btn-outline-secondary";
+                        editLink.textContent = "Edit";
+                        container.appendChild(editLink);
+
+                        var deleteBtn = document.createElement("button");
+                        deleteBtn.type = "button";
+                        deleteBtn.className = "btn btn-sm btn-outline-danger";
+                        deleteBtn.textContent = "Delete";
+                        deleteBtn.addEventListener("click", function () {
+                            deleteForm.action = params.data.deleteUrl;
+                            deleteForm.submit();
+                        });
+                        container.appendChild(deleteBtn);
+
+                        return container;
+                    }
+                }
+            ];
+
+            var gridApi = agGrid.createGrid(document.getElementById("user-grid"), {
+                theme: "legacy",
+                columnDefs: columnDefs,
+                rowData: rowData,
+                rowHeight: 40,
+                headerHeight: 40,
+                suppressCellFocus: true,
+                pagination: true,
+                paginationPageSize: 25,
+                paginationPageSizeSelector: [10, 25, 50, 100]
+            });
+
+            document.getElementById("quick-filter").addEventListener("input", function (e) {
+                gridApi.setGridOption("quickFilterText", e.target.value);
+            });
+        })();
+    </script>
+}

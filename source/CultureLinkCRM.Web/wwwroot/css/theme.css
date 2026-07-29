@@ -1,0 +1,430 @@
+/*
+  CultureLink CRM brand theme + AdminLTE-style application shell.
+  Palette sourced from culturelinkinc.org (logo + site stylesheet), not guessed:
+    teal   #3F958D  - primary brand / interactive color
+    gold   #C4964F  - secondary accent (badges, highlights) - fails AA as text on white, decorative only
+    ink    #432E1E  - primary text color (12.8:1 on white)
+    ink-deep #260B09 - deep dark surfaces (sidebar)
+    cream  #EFEDDF  - warm neutral surface / border color
+  teal-dark is a darkened teal used only where teal sits as text/links on a light
+  background, since brand teal itself is 3.6:1 on white (fails AA for body text).
+*/
+
+:root {
+  --cl-teal: #3F958D;
+  --cl-teal-dark: #2C6E67;
+  --cl-gold: #C4964F;
+  --cl-ink: #432E1E;
+  --cl-ink-deep: #260B09;
+  --cl-brown-mid: #836332;
+  --cl-cream: #EFEDDF;
+
+  --cl-sidebar-width: 15.5rem;
+  --cl-sidebar-collapsed-width: 4.25rem;
+  --cl-navbar-height: 3.5rem;
+
+  --bs-body-font-family: "Open Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --cl-heading-font: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --bs-primary: var(--cl-teal);
+  --bs-primary-rgb: 63, 149, 141;
+  --bs-link-color: var(--cl-teal-dark);
+  --bs-link-hover-color: var(--cl-ink);
+}
+
+body {
+  color: var(--cl-ink);
+  background-color: #f7f6f2;
+}
+
+h1, h2, h3, h4, h5, h6,
+.app-brand-text,
+.app-sidebar .nav-link p {
+  font-family: var(--cl-heading-font);
+}
+
+a {
+  color: var(--bs-link-color);
+}
+a:hover {
+  color: var(--bs-link-hover-color);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--cl-teal);
+  --bs-btn-border-color: var(--cl-teal);
+  --bs-btn-hover-bg: var(--cl-teal-dark);
+  --bs-btn-hover-border-color: var(--cl-teal-dark);
+  --bs-btn-active-bg: var(--cl-teal-dark);
+  --bs-btn-active-border-color: var(--cl-teal-dark);
+  --bs-btn-disabled-bg: var(--cl-teal);
+  --bs-btn-disabled-border-color: var(--cl-teal);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--cl-teal-dark);
+  --bs-btn-border-color: var(--cl-teal);
+  --bs-btn-hover-bg: var(--cl-teal);
+  --bs-btn-hover-border-color: var(--cl-teal);
+  --bs-btn-active-bg: var(--cl-teal-dark);
+  --bs-btn-active-border-color: var(--cl-teal-dark);
+}
+
+/* ---------- Application shell ---------- */
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--cl-sidebar-width);
+  height: var(--cl-navbar-height);
+  z-index: 1030;
+  background-color: #fff;
+  border-bottom: 1px solid #e4e0d6;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  transition: left 0.2s ease-in-out;
+}
+
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--cl-sidebar-width);
+  background-color: var(--cl-ink-deep);
+  color: #f2ece7;
+  z-index: 1040;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.app-sidebar .sidebar-brand {
+  height: var(--cl-navbar-height);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 1rem;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.app-sidebar .sidebar-brand:hover {
+  color: #fff;
+}
+
+.brand-mark {
+  font-size: 1.4rem;
+  color: var(--cl-teal);
+}
+
+.brand-culture {
+  color: var(--cl-teal);
+  font-weight: 700;
+}
+
+.brand-link {
+  color: var(--cl-gold);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.app-sidebar .sidebar-wrapper {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.75rem 0.5rem;
+}
+
+.app-sidebar .nav-header {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(242, 236, 231, 0.5);
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.app-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #d9d0c8;
+  border-radius: 0.375rem;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.125rem;
+  white-space: nowrap;
+}
+
+.app-sidebar .nav-link i {
+  font-size: 1.1rem;
+  width: 1.25rem;
+  text-align: center;
+  color: var(--cl-teal);
+  flex-shrink: 0;
+}
+
+.app-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.app-sidebar .nav-link.active {
+  background-color: var(--cl-teal);
+  color: #fff;
+}
+
+.app-sidebar .nav-link.active i {
+  color: #fff;
+}
+
+.app-sidebar .nav-link p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-main {
+  margin-left: var(--cl-sidebar-width);
+  margin-top: var(--cl-navbar-height);
+  flex: 1 1 auto;
+  transition: margin-left 0.2s ease-in-out;
+}
+
+.app-content-header {
+  padding: 1rem 1.25rem 0;
+}
+
+.app-content {
+  padding: 1rem 1.25rem 2rem;
+}
+
+.app-footer {
+  margin-left: var(--cl-sidebar-width);
+  padding: 0.75rem 1.25rem;
+  color: #6b6259;
+  font-size: 0.85rem;
+  border-top: 1px solid #e4e0d6;
+  transition: margin-left 0.2s ease-in-out;
+}
+
+.sidebar-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--cl-ink);
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--cl-cream);
+}
+
+.app-breadcrumb {
+  font-family: var(--cl-heading-font);
+  font-weight: 600;
+  color: var(--cl-ink);
+  margin: 0;
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 11, 9, 0.4);
+  z-index: 1035;
+}
+
+/* ---------- Collapsed (icon-only) desktop state ---------- */
+
+body.sidebar-collapsed .app-sidebar {
+  width: var(--cl-sidebar-collapsed-width);
+}
+
+body.sidebar-collapsed .app-header,
+body.sidebar-collapsed .app-main,
+body.sidebar-collapsed .app-footer {
+  margin-left: var(--cl-sidebar-collapsed-width);
+  left: var(--cl-sidebar-collapsed-width);
+}
+
+body.sidebar-collapsed .app-sidebar .sidebar-brand .brand-text,
+body.sidebar-collapsed .app-sidebar .nav-link p,
+body.sidebar-collapsed .app-sidebar .nav-header {
+  display: none;
+}
+
+body.sidebar-collapsed .app-sidebar .nav-link {
+  justify-content: center;
+}
+
+/* ---------- Responsive: off-canvas drawer below lg ---------- */
+
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+    width: var(--cl-sidebar-width) !important;
+  }
+
+  .app-header,
+  .app-main,
+  .app-footer {
+    margin-left: 0 !important;
+    left: 0 !important;
+  }
+
+  body.sidebar-collapsed .app-sidebar .sidebar-brand .brand-text,
+  body.sidebar-collapsed .app-sidebar .nav-link p,
+  body.sidebar-collapsed .app-sidebar .nav-header {
+    display: block;
+  }
+
+  body.sidebar-collapsed .app-sidebar .nav-link {
+    justify-content: flex-start;
+  }
+
+  body.sidebar-mobile-open .app-sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-mobile-open .sidebar-backdrop {
+    display: block;
+  }
+}
+
+/* ---------- Data grid pages (Serenity-style toolbar + AG Grid) ---------- */
+
+.page-toolbar h1 {
+  font-size: 1.5rem;
+}
+
+.grid-filter-card {
+  border-color: #e4e0d6;
+  background-color: #fff;
+}
+
+.grid-card {
+  border-color: #e4e0d6;
+}
+
+.grid-card .card-header {
+  background-color: #fff;
+  border-bottom-color: #e4e0d6;
+}
+
+.grid-card .card-footer {
+  background-color: #fff;
+  border-top-color: #e4e0d6;
+}
+
+.pager .page-link {
+  color: var(--cl-teal-dark);
+}
+
+.pager .page-item.active .page-link {
+  background-color: var(--cl-teal);
+  border-color: var(--cl-teal);
+  color: #fff;
+}
+
+.ag-theme-balham.ag-theme-culturelink {
+  --ag-font-family: "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --ag-font-size: 0.9rem;
+  --ag-foreground-color: var(--cl-ink);
+  --ag-header-foreground-color: #f2ece7;
+  --ag-header-background-color: var(--cl-ink-deep);
+  --ag-header-column-separator-color: rgba(255, 255, 255, 0.15);
+  --ag-header-column-resize-handle-color: rgba(255, 255, 255, 0.3);
+  --ag-odd-row-background-color: #faf9f5;
+  --ag-row-hover-color: #e6f2f0;
+  --ag-selected-row-background-color: #d7ebe8;
+  --ag-border-color: #e4e0d6;
+  --ag-row-border-color: #eeece3;
+  --ag-input-focus-border-color: var(--cl-teal);
+  --ag-range-selection-border-color: var(--cl-teal);
+  --ag-checkbox-checked-color: var(--cl-teal);
+  --ag-invalid-color: #b3261e;
+  --ag-border-radius: 0.375rem;
+}
+
+.ag-theme-culturelink .ag-header-cell-text {
+  font-weight: 600;
+}
+
+/* ---------- Forms, details, and general polish (Step 4) ---------- */
+
+.validation-summary-valid {
+  display: none;
+}
+
+.validation-summary-errors {
+  display: block;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: #fbeceb;
+  border: 1px solid #f1c4c0;
+  border-radius: 0.375rem;
+  color: #8a2c25;
+}
+
+.validation-summary-errors ul {
+  margin-bottom: 0;
+  padding-left: 1.1rem;
+}
+
+.section-card {
+  border-color: #e4e0d6;
+  margin-bottom: 1rem;
+}
+
+.section-card .card-header {
+  background-color: #fff;
+  border-bottom-color: #e4e0d6;
+  font-family: var(--cl-heading-font);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  color: #8a8071;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.badge-status-active {
+  background-color: var(--cl-teal-dark);
+  color: #fff;
+}
+
+.badge-status-lapsed {
+  background-color: var(--cl-gold);
+  color: var(--cl-ink);
+}
+
+.badge-status-none {
+  background-color: #e4e0d6;
+  color: var(--cl-ink);
+}
+
+.badge-tag {
+  background-color: var(--cl-cream);
+  color: var(--cl-brown-mid);
+  border: 1px solid #e4e0d6;
+  font-weight: 600;
+}
+
+.contact-row-card {
+  border-color: #e4e0d6;
+  background-color: #faf9f5;
+}

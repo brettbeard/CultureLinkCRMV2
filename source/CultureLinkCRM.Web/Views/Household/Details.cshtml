@@ -1,42 +1,107 @@
 @model Household
-@{ ViewData["Title"] = Model.HouseholdName; }
-<h1>@Model.HouseholdName</h1>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+@{
+    ViewData["Title"] = Model.HouseholdName;
+    var canEdit = User.IsInRole("Admin") || User.IsInRole("Superuser");
 }
 
-<p><strong>Mail preference:</strong> @Model.MailPreference</p>
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">@Model.HouseholdName</h1>
+    @if (canEdit)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Delete</a>
+    }
+</div>
 
-<h4 class="mt-3">Addresses</h4>
-<ul>
-    @foreach (var a in Model.Addresses)
-    {
-        <li>@a.Type: @a.Street1, @a.City @a.StateProvince @a.PostalCode @a.Country @(a.IsPrimary ? "(primary)" : "")</li>
-    }
-</ul>
-<h4>Phones</h4>
-<ul>
-    @foreach (var p in Model.Phones)
-    {
-        <li>@p.Type: @p.Number @(p.IsPrimary ? "(primary)" : "")</li>
-    }
-</ul>
-<h4>Emails</h4>
-<ul>
-    @foreach (var e in Model.Emails)
-    {
-        <li>@e.Type: @e.Address @(e.IsPrimary ? "(primary)" : "")</li>
-    }
-</ul>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-house-door me-2"></i>Household Details</div>
+    <div class="card-body">
+        <strong>Mail preference:</strong> @Model.MailPreference
+    </div>
+</div>
 
-<h4>Members</h4>
-<ul>
-    @foreach (var m in Model.Members)
-    {
-        <li><a asp-controller="Person" asp-action="Details" asp-route-id="@m.Id">@m.FullName</a></li>
-    }
-</ul>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-person-lines-fill me-2"></i>Contact Info</div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h6 class="text-uppercase small text-muted mb-2">Addresses</h6>
+                @if (Model.Addresses.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var a in Model.Addresses)
+                        {
+                            <li class="mb-1">
+                                <span class="badge badge-tag me-1">@a.Type</span> @a.Street1, @a.City @a.StateProvince @a.PostalCode @a.Country
+                                @if (a.IsPrimary) { <span class="text-muted">(primary)</span> }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="empty-state">No addresses on file.</span>
+                }
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-uppercase small text-muted mb-2">Phones</h6>
+                @if (Model.Phones.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var p in Model.Phones)
+                        {
+                            <li class="mb-1">
+                                <span class="badge badge-tag me-1">@p.Type</span> @p.Number
+                                @if (p.IsPrimary) { <span class="text-muted">(primary)</span> }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="empty-state">No phones on file.</span>
+                }
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-uppercase small text-muted mb-2">Emails</h6>
+                @if (Model.Emails.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var e in Model.Emails)
+                        {
+                            <li class="mb-1">
+                                <span class="badge badge-tag me-1">@e.Type</span> @e.Address
+                                @if (e.IsPrimary) { <span class="text-muted">(primary)</span> }
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="empty-state">No emails on file.</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
-<a asp-action="Index">Back to list</a>
+<div class="card section-card">
+    <div class="card-header"><i class="bi bi-people me-2"></i>Members</div>
+    <div class="card-body">
+        @if (Model.Members.Any())
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var m in Model.Members)
+                {
+                    <li class="mb-1"><a asp-controller="Person" asp-action="Details" asp-route-id="@m.Id">@m.FullName</a></li>
+                }
+            </ul>
+        }
+        else
+        {
+            <span class="empty-state">No members linked to this household.</span>
+        }
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to list</a>

@@ -1,51 +1,167 @@
 @model OrganizationIndexViewModel
-@{ ViewData["Title"] = "Organizations"; }
-<h1>Organizations</h1>
-@if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">New Organization</a>
-}
-<form method="get" class="row g-2 mb-3">
-    <div class="col-md-2">
-        <input name="Name" value="@Model.Filter.Name" class="form-control" placeholder="Name" />
-    </div>
-    <div class="col-md-2">
-        <input name="City" value="@Model.Filter.City" class="form-control" placeholder="City" />
-    </div>
-    <div class="col-md-2">
-        <select name="SegmentId" class="form-select" asp-items="Model.SegmentOptions">
-            <option value="">-- Segment --</option>
-        </select>
-    </div>
-    <div class="col-md-2">
-        <select name="NetworkId" class="form-select" asp-items="Model.NetworkOptions">
-            <option value="">-- Network --</option>
-        </select>
-    </div>
-    <div class="col-md-2">
-        <label class="form-label">Added from</label>
-        <input type="date" name="AddedFrom" value="@Model.Filter.AddedFrom?.ToString("yyyy-MM-dd")" class="form-control" />
-    </div>
-    <div class="col-md-2">
-        <label class="form-label">Added to</label>
-        <input type="date" name="AddedTo" value="@Model.Filter.AddedTo?.ToString("yyyy-MM-dd")" class="form-control" />
-    </div>
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-secondary">Filter</button>
-    </div>
-</form>
-<a asp-controller="Export" asp-action="Organizations" asp-all-route-data="@(new Dictionary<string,string?> { ["Name"] = Model.Filter.Name, ["City"] = Model.Filter.City, ["SegmentId"] = Model.Filter.SegmentId?.ToString(), ["NetworkId"] = Model.Filter.NetworkId?.ToString(), ["AddedFrom"] = Model.Filter.AddedFrom?.ToString("yyyy-MM-dd"), ["AddedTo"] = Model.Filter.AddedTo?.ToString("yyyy-MM-dd") })" class="btn btn-outline-primary mb-3">Export to Excel</a>
-<table class="table table-striped">
-    <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var o in Model.Results.Items)
+@{
+    ViewData["Title"] = "Organizations";
+
+    Dictionary<string, string?> RouteValues(int? page = null) => new()
     {
-        <tr>
-            <td>@o.Name</td>
-            <td>@o.OrganizationType</td>
-            <td><a asp-action="Details" asp-route-id="@o.Id">View</a></td>
-        </tr>
+        ["Name"] = Model.Filter.Name,
+        ["City"] = Model.Filter.City,
+        ["SegmentId"] = Model.Filter.SegmentId?.ToString(),
+        ["NetworkId"] = Model.Filter.NetworkId?.ToString(),
+        ["AddedFrom"] = Model.Filter.AddedFrom?.ToString("yyyy-MM-dd"),
+        ["AddedTo"] = Model.Filter.AddedTo?.ToString("yyyy-MM-dd"),
+        ["PageNumber"] = (page ?? Model.Filter.PageNumber).ToString(),
+        ["PageSize"] = Model.Filter.PageSize.ToString()
+    };
+
+    var rows = Model.Results.Items.Select(o => new
+    {
+        name = o.Name,
+        type = o.OrganizationType.ToString(),
+        added = o.CreatedAt.ToString("yyyy-MM-dd"),
+        detailsUrl = Url.Action("Details", new { id = o.Id })
+    });
+    var rowsJson = System.Text.Json.JsonSerializer.Serialize(rows);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/ag-grid-community/ag-theme-balham.min.css" />
+}
+
+<div class="page-toolbar d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="mb-0 me-auto">Organizations</h1>
+    @if (User.IsInRole("Admin") || User.IsInRole("Superuser"))
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New Organization</a>
     }
-    </tbody>
-</table>
-<p>Page @Model.Results.PageNumber of @Model.Results.TotalPages (@Model.Results.TotalCount total)</p>
+    <a asp-controller="Export" asp-action="Organizations" asp-all-route-data="@RouteValues()" class="btn btn-outline-primary">
+        <i class="bi bi-file-earmark-excel me-1"></i>Export to Excel
+    </a>
+</div>
+
+<div class="card grid-filter-card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Name</label>
+                <input name="Name" value="@Model.Filter.Name" class="form-control" placeholder="Search name" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">City</label>
+                <input name="City" value="@Model.Filter.City" class="form-control" placeholder="City" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Segment</label>
+                <select name="SegmentId" class="form-select" asp-items="Model.SegmentOptions">
+                    <option value="">All segments</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Network</label>
+                <select name="NetworkId" class="form-select" asp-items="Model.NetworkOptions">
+                    <option value="">All networks</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label small text-muted">Added from</label>
+                <input type="date" name="AddedFrom" value="@Model.Filter.AddedFrom?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-1">
+                <label class="form-label small text-muted">Added to</label>
+                <input type="date" name="AddedTo" value="@Model.Filter.AddedTo?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-1 d-grid">
+                <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card grid-card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span class="text-muted small">@Model.Results.TotalCount total</span>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-layout-three-columns me-1"></i>Columns
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 10rem;">
+                <li><label class="dropdown-item form-check py-1"><input type="checkbox" class="form-check-input column-toggle" data-field="type" checked /> Type</label></li>
+                <li><label class="dropdown-item form-check py-1"><input type="checkbox" class="form-check-input column-toggle" data-field="added" checked /> Added</label></li>
+            </ul>
+        </div>
+    </div>
+    <div id="org-grid" class="ag-theme-balham ag-theme-culturelink" style="height: 32rem; width: 100%;"></div>
+    <div class="card-footer d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <form method="get" class="d-flex align-items-center gap-2 mb-0">
+            @foreach (var kv in RouteValues())
+            {
+                @if (kv.Key != "PageSize" && kv.Key != "PageNumber")
+                {
+                    <input type="hidden" name="@kv.Key" value="@kv.Value" />
+                }
+            }
+            <label class="small text-muted mb-0">Rows per page</label>
+            <select name="PageSize" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                @foreach (var size in new[] { 10, 25, 50, 100 })
+                {
+                    <option value="@size" selected="@(Model.Filter.PageSize == size)">@size</option>
+                }
+            </select>
+        </form>
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0 pager">
+                <li class="page-item @(Model.Results.PageNumber <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-all-route-data="@RouteValues(Model.Results.PageNumber - 1)">Previous</a>
+                </li>
+                <li class="page-item disabled"><span class="page-link">Page @Model.Results.PageNumber of @Math.Max(Model.Results.TotalPages, 1)</span></li>
+                <li class="page-item @(Model.Results.PageNumber >= Model.Results.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-all-route-data="@RouteValues(Model.Results.PageNumber + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/ag-grid-community/ag-grid-community.min.js"></script>
+    <script>
+        (function () {
+            var rowData = @Html.Raw(rowsJson);
+
+            var columnDefs = [
+                {
+                    field: "name", headerName: "Name", flex: 2, minWidth: 200,
+                    cellRenderer: function (params) {
+                        var link = document.createElement("a");
+                        link.href = params.data.detailsUrl;
+                        link.textContent = params.value;
+                        return link;
+                    }
+                },
+                { field: "type", headerName: "Type", flex: 1, minWidth: 130 },
+                { field: "added", headerName: "Added", flex: 1, minWidth: 110 }
+            ];
+
+            var gridApi = agGrid.createGrid(document.getElementById("org-grid"), {
+                theme: "legacy",
+                columnDefs: columnDefs,
+                rowData: rowData,
+                rowHeight: 40,
+                headerHeight: 40,
+                suppressCellFocus: true,
+                onRowDoubleClicked: function (event) {
+                    if (event.data && event.data.detailsUrl) {
+                        window.location.href = event.data.detailsUrl;
+                    }
+                }
+            });
+
+            document.querySelectorAll(".column-toggle").forEach(function (checkbox) {
+                checkbox.addEventListener("change", function () {
+                    gridApi.setColumnsVisible([checkbox.dataset.field], checkbox.checked);
+                });
+            });
+        })();
+    </script>
+}
